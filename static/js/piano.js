@@ -680,7 +680,7 @@
   var INTERVALS = [
     [0, "unisson"], [1, "seconde mineure"], [2, "seconde majeure"],
     [3, "tierce mineure"], [4, "tierce majeure"], [5, "quarte juste"],
-    [6, "quarte augmentée"], [7, "quinte juste"], [8, "quinte diminuée"],
+    [6, "quarte augmentée"], [7, "quinte juste"], [8, "sixte mineure"],
     [9, "sixte majeure"], [10, "septième mineure"], [11, "septième majeure"]
   ];
 

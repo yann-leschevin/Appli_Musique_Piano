@@ -9,6 +9,7 @@ sans ressource externe, et produit les sons grâce à l'**API Web Audio** du nav
 > JavaScript, tests) et de la documentation a été générée par
 > **Claude Opus 5.5** (modèle d'IA d'**Anthropic**), piloté via **Claude Code**,
 > l'assistant de développement en ligne de commande d'Anthropic.
+> Le cahier des charges a été rédigé avec l'aide de **ChatGPT** (OpenAI).
 > Le rôle humain (Yann Leschevin) a consisté à formuler le besoin, guider,
 > tester et valider le résultat. Voir la section
 > [« Réalisation par l'IA »](#réalisation-par-lia).
@@ -199,8 +200,12 @@ une IA**, et non à la main.
 
 | IA / outil        | Éditeur    | Rôle dans le projet                                                       |
 |-------------------|------------|---------------------------------------------------------------------------|
+| **ChatGPT**       | OpenAI     | Aide à la rédaction du cahier des charges (besoin fonctionnel, fonctionnalités attendues, contraintes) fourni ensuite à Claude. |
 | **Claude Opus 5.5** (`claude-opus-5-5`) | Anthropic | Modèle d'IA ayant conçu l'architecture et écrit tout le code (Python, HTML, CSS, JavaScript), les tests, le script de lancement et cette documentation. |
 | **Claude Code**   | Anthropic  | Agent de développement en ligne de commande utilisé pour piloter Claude : lecture/écriture des fichiers, exécution des tests, commits Git et publication sur GitHub. |
+
+Démarche : le cahier des charges a d'abord été élaboré avec ChatGPT, puis
+transmis à Claude Opus 5.5 qui a réalisé l'application dans Claude Code.
 
 Rôle de l'humain (**Yann Leschevin**) : expression du besoin (piano virtuel
 pédagogique, local, sans dépendance externe), orientation, tests dans le

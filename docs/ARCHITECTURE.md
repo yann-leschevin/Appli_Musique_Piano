@@ -1,7 +1,8 @@
 # Documentation technique — Piano Virtuel Pédagogique
 
 > Ce document, comme l'ensemble du code, a été rédigé par l'IA
-> **Claude Opus 5.5** (Anthropic) via l'outil **Claude Code**.
+> **Claude Opus 5.5** (Anthropic) via l'outil **Claude Code**, à partir d'un
+> cahier des charges rédigé avec l'aide de **ChatGPT** (OpenAI).
 
 ## 1. Vue d'ensemble
 

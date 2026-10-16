@@ -4,6 +4,15 @@ Application web de **piano virtuel** écrite en Python (Flask) côté serveur et
 HTML/CSS/JavaScript natif côté navigateur. Elle fonctionne **100 % localement**,
 sans ressource externe, et produit les sons grâce à l'**API Web Audio** du navigateur.
 
+> 🤖 **Application réalisée par une intelligence artificielle.**
+> L'intégralité du code (serveur Flask, interface HTML/CSS, moteur audio
+> JavaScript, tests) et de la documentation a été générée par
+> **Claude Opus 5.5** (modèle d'IA d'**Anthropic**), piloté via **Claude Code**,
+> l'assistant de développement en ligne de commande d'Anthropic.
+> Le rôle humain (Yann Leschevin) a consisté à formuler le besoin, guider,
+> tester et valider le résultat. Voir la section
+> [« Réalisation par l'IA »](#réalisation-par-lia).
+
 ## Description
 
 Un piano de deux octaves (affichées, décalables de l'octave 2 à l'octave 6)
@@ -33,7 +42,10 @@ dernières notes jouées sur une **portée musicale SVG** en clé de sol.
 .
 ├── app.py               Serveur Flask (page principale + /health)
 ├── requirements.txt     Dépendance : Flask
+├── source.sh            Script de lancement (venv + Flask, port 5003)
 ├── README.md
+├── docs/
+│   └── ARCHITECTURE.md  Documentation technique détaillée
 ├── templates/
 │   └── index.html       Interface HTML
 ├── static/
@@ -55,13 +67,24 @@ dernières notes jouées sur une **portée musicale SVG** en clé de sol.
 
 ## Installation manuelle (WSL / Linux)
 
-Dans un terminal, à la racine du projet `Appli_Musique_Piano2` :
+Dans un terminal, à la racine du projet `Appli_Musique_Piano` :
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
+
+## Lancement rapide (script `source.sh`)
+
+Le script crée/répare l'environnement virtuel, installe Flask si besoin et
+lance le serveur sur le port **5003** :
+
+```bash
+bash source.sh
+```
+
+Puis ouvrez `http://localhost:5003`.
 
 ## Lancement sous WSL
 
@@ -147,3 +170,45 @@ avec un JSON « service en fonctionnement ».
 - Pas d'utilisation de `eval`.
 - Débogage Flask désactivé par défaut.
 - L'application est autonome et peut fonctionner **hors ligne**.
+
+## Technologies utilisées
+
+| Domaine            | Technologie                                                        |
+|--------------------|--------------------------------------------------------------------|
+| Langage serveur    | **Python 3.10+**                                                   |
+| Framework web      | **Flask 3** (routage, moteur de templates **Jinja2**, JSON)        |
+| Interface          | **HTML5** sémantique, **CSS3** (variables, Flexbox/Grid, responsive) |
+| Logique client     | **JavaScript** natif (ES5 strict, sans framework ni bundler)       |
+| Synthèse sonore    | **Web Audio API** (oscillateurs, filtres biquad, enveloppes ADSR, compresseur) |
+| Saisie             | **Pointer Events** (souris + multi-tactile), **KeyboardEvent.code** |
+| Notation musicale  | **SVG** généré dynamiquement (portée, clé de sol, notes)           |
+| Tests              | **unittest** (bibliothèque standard) + client de test Flask        |
+| Environnement      | **WSL2 / Linux**, `venv`, `pip`, script **Bash**                   |
+| Gestion de version | **Git** / **GitHub**                                               |
+
+Aucune bibliothèque JavaScript externe, aucun CDN : l'application fonctionne hors ligne.
+
+Pour le détail du fonctionnement interne (moteur audio, détection d'accords,
+portée SVG, enregistrement), voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+## Réalisation par l'IA
+
+Ce projet est une démonstration de développement logiciel assisté par
+intelligence artificielle : **le code et la documentation ont été écrits par
+une IA**, et non à la main.
+
+| IA / outil        | Éditeur    | Rôle dans le projet                                                       |
+|-------------------|------------|---------------------------------------------------------------------------|
+| **Claude Opus 5.5** (`claude-opus-5-5`) | Anthropic | Modèle d'IA ayant conçu l'architecture et écrit tout le code (Python, HTML, CSS, JavaScript), les tests, le script de lancement et cette documentation. |
+| **Claude Code**   | Anthropic  | Agent de développement en ligne de commande utilisé pour piloter Claude : lecture/écriture des fichiers, exécution des tests, commits Git et publication sur GitHub. |
+
+Rôle de l'humain (**Yann Leschevin**) : expression du besoin (piano virtuel
+pédagogique, local, sans dépendance externe), orientation, tests dans le
+navigateur et validation.
+
+Les commits produits par l'IA portent la mention
+`Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
+
+> Comme pour tout code généré par IA, une relecture humaine reste recommandée
+> avant toute réutilisation dans un autre contexte.
+

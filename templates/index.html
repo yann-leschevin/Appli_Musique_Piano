@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>{{ app_name }}</title>
+  <meta name="description" content="Un piano virtuel pédagogique jouable au clavier, à la souris et au toucher.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#piano">Aller directement au piano</a>
+
+  <header class="app-header">
+    <h1>{{ app_name }}</h1>
+    <p class="tagline">Jouez des notes, découvrez la musique. Clic, toucher ou clavier&nbsp;: à vous de jouer&nbsp;!</p>
+    <div class="audio-status" id="audioStatus" data-state="idle" role="status" aria-live="polite">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span class="status-text">Audio : en attente</span>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section class="info-zone" aria-label="Informations sur les notes jouées">
+      <div class="last-note" aria-live="polite">
+        <span class="last-note-name" id="lastNoteName" data-empty="true">—</span>
+        <span class="last-note-details" id="lastNoteDetails"></span>
+      </div>
+      <div class="note-facts" id="noteFacts" aria-live="polite"></div>
+      <div class="chord-box" id="chordBox" aria-live="polite"></div>
+      <div class="active-notes" id="activeNotes" aria-live="polite"></div>
+    </section>
+
+    <section class="staff-section" aria-label="Portée musicale">
+      <svg id="staffSvg" class="staff" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet"
+           role="img" aria-label="Portée musicale affichant les dernières notes jouées">
+        <g id="staffDefs"></g>
+        <g id="clefG"></g>
+        <g id="staffLines"></g>
+        <g id="staffNotes"></g>
+      </svg>
+      <p class="staff-caption">Les dernières notes jouées, sur la portée en clé de sol.</p>
+    </section>
+
+    <section class="piano-section">
+      <div class="piano-wrap">
+        <div class="piano" id="piano" role="group" aria-label="Clavier de piano"></div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Contrôles du piano">
+      <div class="control-group">
+        <label for="timbreSelect">Timbre</label>
+        <select id="timbreSelect" class="control">
+          <option value="piano-doux">Piano doux</option>
+          <option value="piano-brillant">Piano brillant</option>
+          <option value="synthe">Synthétiseur</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="volumeRange">Volume <output id="volumeValue" for="volumeRange">80</output>%</label>
+        <input type="range" id="volumeRange" class="control" min="0" max="100" value="80" step="1">
+      </div>
+
+      <div class="control-group">
+        <label for="octaveSelect">Octave</label>
+        <div class="octave-row">
+          <button type="button" id="octaveDown" class="control btn-compact" aria-label="Diminuer l'octave">−</button>
+          <span id="octaveValue" class="octave-badge" aria-live="polite">4</span>
+          <button type="button" id="octaveUp" class="control btn-compact" aria-label="Augmenter l'octave">+</button>
+        </div>
+      </div>
+
+      <label class="control-group check-control">
+        <input type="checkbox" id="showNames" checked>
+        <span>Noms des notes</span>
+      </label>
+
+      <div class="control-group">
+        <button type="button" id="panicBtn" class="control btn-panic">Couper tous les sons</button>
+      </div>
+
+      <div class="control-group record-group" aria-label="Enregistrement et lecture">
+        <span class="record-status" id="recordStatus" role="status" aria-live="polite">État : prêt</span>
+        <span class="record-info" id="recordInfo"></span>
+        <div class="record-buttons">
+          <button type="button" id="recordStart" class="control btn-record">Démarrer l'enregistrement</button>
+          <button type="button" id="recordStop" class="control" disabled>Arrêter</button>
+          <button type="button" id="playBtn" class="control btn-play" disabled>Rejouer</button>
+          <button type="button" id="stopPlayBtn" class="control" disabled>Arrêter la lecture</button>
+          <button type="button" id="clearBtn" class="control">Effacer</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <button type="button" id="helpToggle" class="control" aria-expanded="false" aria-controls="helpSection">
+          Aide — touches du clavier
+        </button>
+      </div>
+    </section>
+
+    <section class="help-section" id="helpSection" hidden aria-label="Aide sur le clavier">
+      <h2>Mapping du clavier (AZERTY et QWERTY)</h2>
+      <p>Le mapping est le même sur les deux dispositions&nbsp;: il suit l'ordre des touches physiques du clavier.</p>
+      <table class="keymap-table">
+        <thead>
+          <tr><th>Note</th><th>Octave 4</th><th>Octave 5</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Do (C)</td><td><kbd>A</kbd></td><td><kbd>Q</kbd></td></tr>
+          <tr><td>Do♯ (C♯)</td><td><kbd>Z</kbd></td><td><kbd>S</kbd></td></tr>
+          <tr><td>Ré (D)</td><td><kbd>E</kbd></td><td><kbd>D</kbd></td></tr>
+          <tr><td>Ré♯ (D♯)</td><td><kbd>R</kbd></td><td><kbd>F</kbd></td></tr>
+          <tr><td>Mi (E)</td><td><kbd>T</kbd></td><td><kbd>G</kbd></td></tr>
+          <tr><td>Fa (F)</td><td><kbd>Y</kbd></td><td><kbd>H</kbd></td></tr>
+          <tr><td>Fa♯ (F♯)</td><td><kbd>U</kbd></td><td><kbd>J</kbd></td></tr>
+          <tr><td>Sol (G)</td><td><kbd>I</kbd></td><td><kbd>K</kbd></td></tr>
+          <tr><td>Sol♯ (G♯)</td><td><kbd>O</kbd></td><td><kbd>L</kbd></td></tr>
+          <tr><td>La (A)</td><td><kbd>P</kbd></td><td><kbd>M</kbd></td></tr>
+          <tr><td>La♯ (A♯)</td><td><kbd>^</kbd></td><td><kbd>ù</kbd></td></tr>
+          <tr><td>Si (B)</td><td><kbd>$</kbd></td><td><kbd>*</kbd></td></tr>
+        </tbody>
+      </table>
+      <p>Astuce&nbsp;: utilisez les touches <kbd>−</kbd> et <kbd>+</kbd> pour changer d'octave, <kbd>V</kbd> pour masquer
+         les noms des notes et <kbd>Échap</kbd> pour couper tous les sons immédiatement.</p>
+      <p>La seconde rangée (Q à €) déclenche la même note dans l'octave supérieure.</p>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Piano virtuel pédagogique — 100&nbsp;% local, sans ressource externe.</p>
+  </footer>
+
+  <noscript>
+    <p class="noscript">Cette application nécessite JavaScript pour produire les sons et afficher la portée.</p>
+  </noscript>
+
+  <script src="{{ url_for('static', filename='js/piano.js') }}" defer></script>
+</body>
+</html>

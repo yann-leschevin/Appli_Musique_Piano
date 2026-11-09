@@ -1,5 +1,41 @@
 # Piano Virtuel Pédagogique
 
+> 🌐 **Essayer en ligne : <https://leschevin.com/projets/piano/>**
+>
+> 🤝 **Version PHP et mise en ligne réalisées par Yann Leschevin ([@yann-leschevin](https://github.com/yann-leschevin)) en collaboration avec Claude (Anthropic), via [Claude Code](https://claude.com/claude-code)** — novembre 2026.
+
+Piano jouable au clavier, à la souris ou au toucher, avec affichage des notes sur une portée en clé de sol et détection des accords.
+
+Ce dépôt contient **deux versions** du projet :
+
+| Partie | Dossier | Rôle | Lancer en local |
+|--------|---------|------|-----------------|
+| 🐍 **Python** (Flask) | racine du dépôt | version d'origine, à lancer sur son ordinateur | `python3 app.py` (ou `./source.sh`) |
+| 🐘 **PHP** | [`php/`](php/) | version publiée sur [leschevin.com](https://leschevin.com/projets/piano/) (hébergement OVH) | `cd php && php -S 127.0.0.1:8080 -t www` |
+
+---
+
+## 🐘 Partie PHP — version en ligne
+
+👉 <https://leschevin.com/projets/piano/> · documentation détaillée : [`php/README.md`](php/README.md)
+
+- `index.php` + `health.php` remplacent les routes Flask ;
+- améliorations faites pour la version en ligne : la note jouée apparaît à droite de la portée, en couleur,
+  avec son nom ; jusqu'à 15 notes/accords visibles ; le message d'accord ne décale plus le clavier.
+
+Tests : `bash php/tests/test.sh` (reprise des tests unittest Flask).
+
+Le dossier `php/www/` est exactement ce qui est envoyé sur l'hébergement (dans `www/projets/piano/`).
+
+---
+
+## 🐍 Partie Python — version d'origine
+
+Le code Python n'a pas été modifié par le portage : il reste à la racine du dépôt.
+Sa documentation d'origine suit.
+
+### Piano Virtuel Pédagogique
+
 Application web de **piano virtuel** écrite en Python (Flask) côté serveur et en
 HTML/CSS/JavaScript natif côté navigateur. Elle fonctionne **100 % localement**,
 sans ressource externe, et produit les sons grâce à l'**API Web Audio** du navigateur.
@@ -14,7 +50,7 @@ sans ressource externe, et produit les sons grâce à l'**API Web Audio** du nav
 > tester et valider le résultat. Voir la section
 > [« Réalisation par l'IA »](#réalisation-par-lia).
 
-## Description
+#### Description
 
 Un piano de deux octaves (affichées, décalables de l'octave 2 à l'octave 6)
 jouable à la souris, au toucher ou au clavier de l'ordinateur. L'application
@@ -22,7 +58,7 @@ affiche le nom des notes (notations internationale et française), leur
 fréquence, les notes maintenues, détecte les accords simples, et dessine les
 dernières notes jouées sur une **portée musicale SVG** en clé de sol.
 
-## Fonctionnalités
+#### Fonctionnalités
 
 - Piano interactif : touches blanches et noires, noms des notes, polyphonie.
 - Saisie à la souris, au toucher (multi-tactile) et au clavier AZERTY/QWERTY.
@@ -37,7 +73,7 @@ dernières notes jouées sur une **portée musicale SVG** en clé de sol.
 - Enregistrement d'une séquence (note, timing, durée, vélocité), relecture et
   effacement, le tout en mémoire dans le navigateur.
 
-## Structure du projet
+#### Structure du projet
 
 ```
 .
@@ -58,7 +94,7 @@ dernières notes jouées sur une **portée musicale SVG** en clé de sol.
     └── test_app.py      Tests avec unittest + client de test Flask
 ```
 
-## Prérequis
+#### Prérequis
 
 - Python 3.10 ou plus récent.
 - `pip` (pour installer Flask).
@@ -66,7 +102,7 @@ dernières notes jouées sur une **portée musicale SVG** en clé de sol.
 - Les sons utilisent l'API Web Audio : servez la page en HTTP avec Flask
   (cette application) pour que le navigateur autorise l'audio.
 
-## Installation manuelle (WSL / Linux)
+#### Installation manuelle (WSL / Linux)
 
 Dans un terminal, à la racine du projet `Appli_Musique_Piano` :
 
@@ -76,7 +112,7 @@ source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
-## Lancement rapide (script `source.sh`)
+#### Lancement rapide (script `source.sh`)
 
 Le script crée/répare l'environnement virtuel, installe Flask si besoin et
 lance le serveur sur le port **5003** :
@@ -87,7 +123,7 @@ bash source.sh
 
 Puis ouvrez `http://localhost:5003`.
 
-## Lancement sous WSL
+#### Lancement sous WSL
 
 Depuis le dossier du projet, avec l'environnement virtuel activé :
 
@@ -105,7 +141,7 @@ http://localhost:5002
 Le débogage Flask est désactivé par défaut. Pour l'activer :
 `FLASK_DEBUG=1 python3 app.py`.
 
-## Contrôles du clavier (AZERTY et QWERTY)
+#### Contrôles du clavier (AZERTY et QWERTY)
 
 Le mapping suit l'ordre des **touches physiques**, identique sur les deux
 dispositions. Il est affiché dans l'application (bouton « Aide — touches du clavier »).
@@ -133,7 +169,7 @@ Raccourcis supplémentaires :
 
 Maintenir une touche appuyée ne redéclenche pas la note (répétition désactivée).
 
-## Tests
+#### Tests
 
 Dans un terminal, à la racine du projet :
 
@@ -149,7 +185,7 @@ avec un JSON « service en fonctionnement ».
 > Si Flask n'est pas installé, les tests Flask ne peuvent pas s'exécuter.
 > Installez d'abord les dépendances (voir « Installation manuelle »).
 
-## Solutions aux problèmes courants
+#### Solutions aux problèmes courants
 
 - **Flask introuvable (`ModuleNotFoundError`)** : activez l'environnement
   virtuel puis exécutez `python3 -m pip install -r requirements.txt`.
@@ -165,14 +201,14 @@ avec un JSON « service en fonctionnement ».
 - **L'audio reste « en attente »** : c'est normal tant que l'utilisateur n'a
   pas interagi avec la page (restriction des navigateurs).
 
-## Sécurité
+#### Sécurité
 
 - Aucune donnée utilisateur n'est injectée dans le HTML sans échappement.
 - Pas d'utilisation de `eval`.
 - Débogage Flask désactivé par défaut.
 - L'application est autonome et peut fonctionner **hors ligne**.
 
-## Technologies utilisées
+#### Technologies utilisées
 
 | Domaine            | Technologie                                                        |
 |--------------------|--------------------------------------------------------------------|
@@ -192,7 +228,7 @@ Aucune bibliothèque JavaScript externe, aucun CDN : l'application fonctionne ho
 Pour le détail du fonctionnement interne (moteur audio, détection d'accords,
 portée SVG, enregistrement), voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## Réalisation par l'IA
+#### Réalisation par l'IA
 
 Ce projet est une démonstration de développement logiciel assisté par
 intelligence artificielle : **le code et la documentation ont été écrits par
@@ -216,4 +252,3 @@ Les commits produits par l'IA portent la mention
 
 > Comme pour tout code généré par IA, une relecture humaine reste recommandée
 > avant toute réutilisation dans un autre contexte.
-

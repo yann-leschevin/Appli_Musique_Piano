@@ -695,7 +695,7 @@
       }
     });
     unique.sort(function (a, b) { return a - b; });
-    if (unique.length === 0) return "";
+    if (unique.length < 2) return ""; /* une seule note : pas d'accord à afficher */
 
     var root = unique[0];
     var intervals = unique.map(function (pc) {
@@ -823,18 +823,45 @@
     return groups;
   }
 
+  /* La note (ou l'accord) en cours est tout à droite de la portée, en couleur ;
+   * les notes précédentes défilent vers la gauche en s'estompant doucement. */
+  var STAFF_CURRENT_X = 945;
+  var STAFF_LEFT_LIMIT = 190; /* à droite de la clé de sol */
+  var STAFF_STEP_X = 54;
+  var CURRENT_NOTE_COLOR = "#5ec8ff";
+  var PAST_NOTE_COLOR = "#f6e7cc";
+  var SHARP_COLOR = "#f0b45f";
+
   function refreshStaff() {
     if (!dom.staffNotes) return;
     clearElement(dom.staffNotes);
 
     var groups = groupStaffEvents();
-    var x = 975;
-    var xStep = 64;
+    if (groups.length === 0) return;
 
-    for (var gi = groups.length - 1; gi >= 0; gi--) {
+    /* Bande lumineuse derrière la note en cours */
+    var band = document.createElementNS(SVG_NS, "rect");
+    band.setAttribute("x", String(STAFF_CURRENT_X - 30));
+    band.setAttribute("y", "20");
+    band.setAttribute("width", "60");
+    band.setAttribute("height", "260");
+    band.setAttribute("rx", "10");
+    band.setAttribute("fill", CURRENT_NOTE_COLOR);
+    band.setAttribute("fill-opacity", "0.10");
+    band.setAttribute("class", "staff-current-band");
+    dom.staffNotes.appendChild(band);
+
+    var x = STAFF_CURRENT_X;
+    for (var gi = groups.length - 1, age = 0; gi >= 0 && x >= STAFF_LEFT_LIMIT; gi--, age++) {
       var group = groups[gi];
-      var sorted = group.slice().sort(function (a, b) { return a.midi - b.midi; });
+      var current = age === 0;
+      var color = current ? CURRENT_NOTE_COLOR : PAST_NOTE_COLOR;
+      var parent = document.createElementNS(SVG_NS, "g");
+      parent.setAttribute("opacity", String(current ? 1 : Math.max(0.4, 0.92 - age * 0.04)));
+      if (current) parent.setAttribute("class", "staff-current");
+      dom.staffNotes.appendChild(parent);
 
+      var sorted = group.slice().sort(function (a, b) { return a.midi - b.midi; });
       var minDia = midiToDiatonic(sorted[0].midi);
       var maxDia = midiToDiatonic(sorted[sorted.length - 1].midi);
       var stemUp = (minDia + maxDia) / 2 <= 34;
@@ -852,22 +879,39 @@
           var lx1 = x - 16;
           var lx2 = x + 16;
           if (struck) lx1 -= 14;
-          drawLedgerLine(lx1, lx2, staffY(ledgerY));
+          drawLedgerLine(parent, lx1, lx2, staffY(ledgerY));
         }
 
         if (struck) {
-          drawSharp(x - (ni === 0 ? 12 : 12), y);
+          drawSharp(parent, x - 12, y, current ? CURRENT_NOTE_COLOR : SHARP_COLOR);
         }
 
-        drawNoteHead(x, y);
+        drawNoteHead(parent, x, y, color, current);
 
         if (stemUp) {
-          drawStem(x + 9, y - 4, x + 9, y - 42);
+          drawStem(parent, x + 9, y - 4, x + 9, y - 42, color);
         } else {
-          drawStem(x + 9, y + 4, x + 9, y + 42);
+          drawStem(parent, x + 9, y + 4, x + 9, y + 42, color);
         }
       }
-      x -= xStep;
+      if (current) {
+        /* Nom de la note en cours sous la portée (ex. « Do 4 » ou « Do 4 · Mi 4 ») */
+        var label = document.createElementNS(SVG_NS, "text");
+        var labelText = sorted.map(function (ev) {
+          var n = noteNames(ev.midi);
+          return n.fr + " " + n.octave;
+        }).join(" · ");
+        /* Centré sous la note, mais sans dépasser le bord droit de la portée */
+        label.setAttribute("x", String(Math.min(x, 992 - labelText.length * 4.6)));
+        label.setAttribute("y", "272");
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("font-size", "16");
+        label.setAttribute("font-weight", "700");
+        label.setAttribute("fill", CURRENT_NOTE_COLOR);
+        label.textContent = labelText;
+        parent.appendChild(label);
+      }
+      x -= STAFF_STEP_X;
     }
   }
 
@@ -887,31 +931,31 @@
     return null;
   }
 
-  function drawNoteHead(x, y) {
+  function drawNoteHead(parent, x, y, color, current) {
     var el = document.createElementNS(SVG_NS, "ellipse");
     el.setAttribute("cx", String(x));
     el.setAttribute("cy", String(y));
     el.setAttribute("rx", "9");
     el.setAttribute("ry", "6.5");
     el.setAttribute("transform", "rotate(-20 " + x + " " + y + ")");
-    el.setAttribute("fill", "#f6e7cc");
-    el.setAttribute("stroke", "#17120f");
-    el.setAttribute("stroke-width", "1");
-    dom.staffNotes.appendChild(el);
+    el.setAttribute("fill", color);
+    el.setAttribute("stroke", current ? "#ffffff" : "#17120f");
+    el.setAttribute("stroke-width", current ? "1.5" : "1");
+    parent.appendChild(el);
   }
 
-  function drawSharp(x, y) {
+  function drawSharp(parent, x, y, color) {
     var el = document.createElementNS(SVG_NS, "text");
     el.setAttribute("x", String(x));
     el.setAttribute("y", String(y + 8));
     el.setAttribute("font-size", "22");
-    el.setAttribute("fill", "#f0b45f");
+    el.setAttribute("fill", color);
     el.setAttribute("font-family", "DejaVu Sans, Segoe UI Symbol, sans-serif");
     el.textContent = "\u266F";
-    dom.staffNotes.appendChild(el);
+    parent.appendChild(el);
   }
 
-  function drawLedgerLine(x1, x2, y) {
+  function drawLedgerLine(parent, x1, x2, y) {
     var el = document.createElementNS(SVG_NS, "line");
     el.setAttribute("x1", String(x1));
     el.setAttribute("y1", String(y));
@@ -919,18 +963,18 @@
     el.setAttribute("y2", String(y));
     el.setAttribute("stroke", "#a09178");
     el.setAttribute("stroke-width", "2");
-    dom.staffNotes.appendChild(el);
+    parent.appendChild(el);
   }
 
-  function drawStem(x1, y1, x2, y2) {
+  function drawStem(parent, x1, y1, x2, y2, color) {
     var el = document.createElementNS(SVG_NS, "line");
     el.setAttribute("x1", String(x1));
     el.setAttribute("y1", String(y1));
     el.setAttribute("x2", String(x2));
     el.setAttribute("y2", String(y2));
-    el.setAttribute("stroke", "#f6e7cc");
+    el.setAttribute("stroke", color);
     el.setAttribute("stroke-width", "2");
-    dom.staffNotes.appendChild(el);
+    parent.appendChild(el);
   }
 
   /* ============================================================

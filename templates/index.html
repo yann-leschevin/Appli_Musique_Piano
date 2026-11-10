@@ -26,8 +26,6 @@
         <span class="last-note-details" id="lastNoteDetails"></span>
       </div>
       <div class="note-facts" id="noteFacts" aria-live="polite"></div>
-      <div class="chord-box" id="chordBox" aria-live="polite"></div>
-      <div class="active-notes" id="activeNotes" aria-live="polite"></div>
     </section>
 
     <section class="staff-section" aria-label="Portée musicale">
@@ -38,7 +36,12 @@
         <g id="staffLines"></g>
         <g id="staffNotes"></g>
       </svg>
-      <p class="staff-caption">Les dernières notes jouées, sur la portée en clé de sol.</p>
+      <!-- Notes maintenues et accord : hauteur fixe, sous la portée (ne décale plus le piano) -->
+      <div class="staff-status">
+        <div class="active-notes" id="activeNotes" aria-live="polite">Aucune note maintenue.</div>
+        <div class="chord-box" id="chordBox" aria-live="polite"></div>
+      </div>
+      <p class="staff-caption">Les dernières notes jouées, sur la portée en clé de sol. La note en cours est à droite, en couleur.</p>
     </section>
 
     <section class="piano-section">

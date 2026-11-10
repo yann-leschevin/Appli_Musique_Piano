@@ -117,6 +117,7 @@ body {
 .last-note-details {
   font-size: 1rem;
   color: var(--text-dim);
+  min-height: 1.5em;
 }
 
 .note-facts {
@@ -124,6 +125,7 @@ body {
   flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
+  min-height: 2em;
 }
 .note-facts span, .chord-box .chord-label, .active-notes .active-label {
   background: var(--bg-panel);
@@ -136,6 +138,25 @@ body {
 .chord-box {
   font-size: 0.95rem;
   color: var(--accent-strong);
+  font-weight: 600;
+}
+.chord-box:empty { display: none; }
+
+/* Barre sous la portée : hauteur fixe pour que rien ne bouge en jouant */
+.staff-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 2.4em;
+  margin-top: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.staff-status > div {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .active-notes { font-size: 0.9rem; color: var(--text-dim); }
